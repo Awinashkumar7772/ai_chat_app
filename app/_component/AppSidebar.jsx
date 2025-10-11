@@ -27,7 +27,7 @@ export function AppSidebar() {
   </div>
   <div>
 
- {theme ==='light'?(<Button variant='ghost' onClick = {()=>setTheme('dark')}><Sun></Sun></Button>): (<Button  onClick = {()=>setTheme('light')}><Moon /></Button>
+ {theme ==='light'?(<Button variant='ghost' onClick = {()=>setTheme('dark')}><Sun/></Button>): (<Button  onClick = {()=>setTheme('light')}><Moon /></Button>
 )}
   </div>
   </div>
