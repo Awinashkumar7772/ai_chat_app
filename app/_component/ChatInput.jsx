@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button'
+import { Button } from '../../components/ui/button'
 import { Mic, Paperclip, Send } from 'lucide-react'
 import React from 'react'
 import AiMultiModels from './AiMultiModels'
