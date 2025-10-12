@@ -1,4 +1,4 @@
-import AiModelList from '@/Shared/AiModelList';
+import AiModelList from '../../Shared/AiModelList';
 import { useState ,useEffect}  from 'react';
 import {
   Select,
@@ -6,10 +6,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Switch } from '@/components/ui/switch';
+} from "../../components/ui/select";
+import { Switch } from '../../components/ui/switch';
 import { Lock, MessagesSquare } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '../../components/ui/button';
 
 function AiMultiModels() {
   const [aiModelList, setAiModelList] = useState(AiModelList);
