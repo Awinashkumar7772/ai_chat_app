@@ -1,21 +1,16 @@
 import mongoose from "mongoose";
 
-let isConnected = false; 
-
-export async function connectDB() {
-  if (isConnected) {
-    console.log("✅ MongoDB already connected");
-    return;
-  }
-
+const connectDB = async () => {
   try {
-    const db = await mongoose.connect(process.env.MONGODB_URI, {
-      dbName: "ai_chat_app",
-    });
-    isConnected = true;
-    console.log("✅ MongoDB Connected:", db.connection.name);
+    if (mongoose.connection.readyState >= 1) {
+      return; // Already connected
+    }
+
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("✅ MongoDB connected successfully");
   } catch (error) {
-    console.error("❌ MongoDB Connection Failed:", error);
-    throw new Error("MongoDB connection failed");
+    console.error("❌ MongoDB connection failed:", error.message);
   }
-}
+};
+
+export default connectDB;

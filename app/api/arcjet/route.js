@@ -1,5 +1,7 @@
 import { aj } from "@/config/arcjet";
 import { NextResponse } from "next/server";
+import connectDB from "@/Db/MonoDb";
+import mongoose from "mongoose";
 
 export async function GET(req) {
   const userId = "user123"; // Replace with your authenticated user ID
@@ -9,9 +11,28 @@ export async function GET(req) {
   if (decision.isDenied()) {
     return NextResponse.json(
       { error: "Too Many Requests", reason: decision.reason },
-      { status: 429 },
+      { status: 429 }
     );
   }
 
-  return NextResponse.json({ message: "Hello world" });
+  try {
+    // ✅ Connect to MongoDB
+    await connectDB();
+
+    // ✅ Test database connection by listing collections
+    const collections = await mongoose.connection.db.listCollections().toArray();
+
+    return NextResponse.json({
+      message: "MongoDB Connected + Arcjet Active 🚀",
+      db: mongoose.connection.name,
+      collections: collections.map((c) => c.name),
+      myname:"awinash"
+    });
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    return NextResponse.json(
+      { error: "Failed to connect to MongoDB", details: error.message },
+      { status: 500 }
+    );
+  }
 }

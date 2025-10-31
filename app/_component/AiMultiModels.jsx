@@ -1,18 +1,24 @@
 import AiModelList from '../../Shared/AiModelList';
-import { useState ,useEffect}  from 'react';
+import { useState ,useEffect, useContext}  from 'react';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
 import { Switch } from '../../components/ui/switch';
 import { Lock, MessagesSquare } from 'lucide-react';
 import { Button } from '../../components/ui/button';
+import { AiSelectedModelContext } from '@/context/AiSelectedModelContext';
+import { useUser } from '@clerk/nextjs';
 
 function AiMultiModels() {
+  const {user} = useUser
   const [aiModelList, setAiModelList] = useState(AiModelList);
+  const {AiSelectedModels,setAiSelectedModels} = useContext(AiSelectedModelContext)
   const onToggleChange = (model, value) => {
     setAiModelList((prev) =>
       prev.map((m) =>
@@ -20,6 +26,19 @@ function AiMultiModels() {
       )
     );
   };
+  const onSelectedValue =async(parentModel,value)=>{
+    setAiSelectedModels(prev =>({
+      ...prev,
+      [parentModel]:{
+        modelId:value
+      }
+    }))
+    //update to firebase database
+    const docRef = doc(db,"users",user?.primaryEmailAddress?.emailAddress);
+    await updateDoc(docRef,{
+      selectedModelPref:AiSelectedModels
+    })
+  }
 
   return (
     <div className='flex flex-1 border-b'>
@@ -37,17 +56,29 @@ function AiMultiModels() {
             <div className='flex items-center gap-4'>
               <img src={model.icon} alt={model.model} width={24} height={24} />
               <div className={!model.enable ? 'hidden' : ''}>
-                <Select>
+                
+                <Select defaultValue = {AiSelectedModels[model?.model.toUpperCase()]?.modelId} onValueChange={(value)=>onSelectedValue(model.model,value)}>
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder={model.subModel[0].name} />
+                    <SelectValue placeholder={AiSelectedModels[model?.model]?.modelId} />
                   </SelectTrigger>
                   <SelectContent>
-                    {model.subModel.map((subModel, sIndex) => (
-                      <SelectItem key={sIndex} value={subModel.name}>{subModel.name}</SelectItem>
+                  <SelectGroup className="px-3">
+                    <SelectLabel className='text-sm text-gray-400'>Free</SelectLabel>
+                    {model.subModel.map((subModel, i) => subModel.premium==false &&(
+                      <SelectItem key={i} value={subModel.id}>{subModel.name}
+                      </SelectItem>
                     ))}
+                    </SelectGroup>
+                       <SelectGroup className="px-3">
+                    <SelectLabel className='text-sm text-gray-400'>Premium</SelectLabel>
+                    {model.subModel.map((subModel, i) => subModel.premium== true &&(
+                      <SelectItem key={i} value={subModel.name}  disabled= {subModel.premium} >{subModel.name} {subModel.premium && <Lock className='h-4 w-4'/>}</SelectItem>
+                    ))}
+                    </SelectGroup>
                   </SelectContent>
                 </Select>
               </div>
+                  
               <div>
                 {model.enable ? (
                   <Switch

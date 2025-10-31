@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import {
   SidebarProvider,
@@ -7,10 +7,13 @@ import {
 import { AppSidebar } from "./_component/appSidebar";
 import AppHeader from "./_component/AppHeader";
 import { useUser } from "@clerk/nextjs";
+import {AiSelectedModelContext} from '../context/AiSelectedModelContext'
+import {DefaultModel} from 'Shared/AiModelShared'
 
 function Provider({ children, ...props }) {
   const { user } = useUser();
-
+  const [AiSelectedModels,setAiSelectedModels] = useState(DefaultModel);
+//  const [aiSelectModels,setAiSelectedModels] = useState(defaultModel)
   useEffect(() => {
     if (user) {
       console.log("User logged in:", user.fullName);
@@ -24,8 +27,8 @@ function Provider({ children, ...props }) {
       attribute="class"
       defaultTheme="light"
       enableSystem
-      disableTransitionOnChange
-    >
+      disableTransitionOnChange>
+       <AiSelectedModelContext.Provider value={{AiSelectedModels,setAiSelectedModels}} >
       <SidebarProvider>
         <AppSidebar />
         <div className="w-full">
@@ -33,6 +36,8 @@ function Provider({ children, ...props }) {
           {children}
         </div>
       </SidebarProvider>
+      </AiSelectedModelContext.Provider>
+      
     </NextThemesProvider>
   );
 }
