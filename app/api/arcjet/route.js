@@ -26,7 +26,6 @@ export async function GET(req) {
       message: "MongoDB Connected + Arcjet Active 🚀",
       db: mongoose.connection.name,
       collections: collections.map((c) => c.name),
-      myname:"awinash"
     });
   } catch (error) {
     console.error("MongoDB connection error:", error);
